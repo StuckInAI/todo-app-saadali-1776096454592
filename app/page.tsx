@@ -60,7 +60,7 @@ export default function Home() {
       <div className="max-w-lg mx-auto">
         {/* Header */}
         <div className="text-center mb-10">
-          <h1 className="text-5xl font-extrabold text-indigo-600 tracking-tight mb-2">
+          <h1 className="text-5xl font-extrabold text-orange-500 tracking-tight mb-2">
             ✅ Todo App
           </h1>
           <p className="text-gray-500 text-lg">Stay organized and get things done</p>

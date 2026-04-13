@@ -39,8 +39,8 @@ export default function TodoItem({ todo, onToggle, onDelete, onEdit }: TodoItemP
         onClick={() => onToggle(todo.id)}
         className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
           todo.completed
-            ? 'bg-indigo-500 border-indigo-500 text-white'
-            : 'border-gray-300 hover:border-indigo-400'
+            ? 'bg-orange-500 border-orange-500 text-white'
+            : 'border-gray-300 hover:border-orange-400'
         }`}
         aria-label={todo.completed ? 'Mark as incomplete' : 'Mark as complete'}
       >
@@ -69,12 +69,12 @@ export default function TodoItem({ todo, onToggle, onDelete, onEdit }: TodoItemP
             value={editValue}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditValue(e.target.value)}
             onKeyDown={handleEditKeyDown}
-            className="flex-1 px-3 py-1.5 rounded-lg border-2 border-indigo-300 focus:border-indigo-500 focus:outline-none text-gray-700 text-sm"
+            className="flex-1 px-3 py-1.5 rounded-lg border-2 border-orange-300 focus:border-orange-500 focus:outline-none text-gray-700 text-sm"
             autoFocus
           />
           <button
             type="submit"
-            className="px-3 py-1.5 bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-medium rounded-lg transition-colors"
+            className="px-3 py-1.5 bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium rounded-lg transition-colors"
           >
             Save
           </button>
@@ -101,7 +101,7 @@ export default function TodoItem({ todo, onToggle, onDelete, onEdit }: TodoItemP
         <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
           <button
             onClick={() => setIsEditing(true)}
-            className="p-1.5 text-gray-400 hover:text-indigo-500 hover:bg-indigo-50 rounded-lg transition-all"
+            className="p-1.5 text-gray-400 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-all"
             aria-label="Edit task"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
