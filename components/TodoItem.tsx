@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Todo } from '@/types';
 
 interface TodoItemProps {
@@ -13,6 +13,15 @@ interface TodoItemProps {
 export default function TodoItem({ todo, onToggle, onDelete, onEdit }: TodoItemProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(todo.text);
+  const [isVisible, setIsVisible] = useState(false);
+  const [isRemoving, setIsRemoving] = useState(false);
+  const [checkAnimating, setCheckAnimating] = useState(false);
+  const itemRef = useRef<HTMLLIElement>(null);
+
+  useEffect(() => {
+    // Trigger entrance animation
+    requestAnimationFrame(() => setIsVisible(true));
+  }, []);
 
   const handleEditSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -32,21 +41,50 @@ export default function TodoItem({ todo, onToggle, onDelete, onEdit }: TodoItemP
     }
   };
 
+  const handleToggle = () => {
+    setCheckAnimating(true);
+    setTimeout(() => setCheckAnimating(false), 350);
+    onToggle(todo.id);
+  };
+
+  const handleDelete = () => {
+    setIsRemoving(true);
+    setTimeout(() => onDelete(todo.id), 200);
+  };
+
   return (
-    <li className="py-3 flex items-center gap-3 group">
+    <li
+      ref={itemRef}
+      className="py-3 flex items-center gap-3 group"
+      style={{
+        transition: 'opacity 0.22s ease, transform 0.28s cubic-bezier(0.34,1.56,0.64,1)',
+        opacity: isRemoving ? 0 : isVisible ? 1 : 0,
+        transform: isRemoving
+          ? 'translateX(12px) scale(0.97)'
+          : isVisible
+          ? 'translateY(0) scale(1)'
+          : 'translateY(-8px) scale(0.97)',
+      }}
+    >
       {/* Checkbox */}
       <button
-        onClick={() => onToggle(todo.id)}
-        className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
+        onClick={handleToggle}
+        style={{
+          transition:
+            'background-color 0.18s cubic-bezier(0.34,1.56,0.64,1), border-color 0.18s cubic-bezier(0.34,1.56,0.64,1), transform 0.18s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.18s ease',
+        }}
+        className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center active:scale-90 ${
           todo.completed
-            ? 'bg-orange-500 border-orange-500 text-white'
-            : 'border-gray-300 hover:border-orange-400'
+            ? 'bg-orange-500 border-orange-500 text-white shadow-md shadow-orange-200'
+            : 'border-gray-300 hover:border-orange-400 hover:shadow-sm hover:shadow-orange-100'
         }`}
         aria-label={todo.completed ? 'Mark as incomplete' : 'Mark as complete'}
       >
         {todo.completed && (
           <svg
-            className="w-3.5 h-3.5"
+            className={`w-3.5 h-3.5 ${
+              checkAnimating ? 'animate-check-pop' : ''
+            }`}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -63,34 +101,53 @@ export default function TodoItem({ todo, onToggle, onDelete, onEdit }: TodoItemP
 
       {/* Text or Edit Form */}
       {isEditing ? (
-        <form onSubmit={handleEditSubmit} className="flex-1 flex gap-2">
+        <form
+          onSubmit={handleEditSubmit}
+          className="flex-1 flex gap-2 animate-slide-in"
+        >
           <input
             type="text"
             value={editValue}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditValue(e.target.value)}
             onKeyDown={handleEditKeyDown}
-            className="flex-1 px-3 py-1.5 rounded-lg border-2 border-orange-300 focus:border-orange-500 focus:outline-none text-gray-700 text-sm"
+            style={{
+              transition:
+                'border-color 0.15s ease, box-shadow 0.15s ease',
+            }}
+            className="flex-1 px-3 py-1.5 rounded-lg border-2 border-orange-300 focus:border-orange-500 focus:outline-none focus:shadow-[0_0_0_3px_rgba(249,115,22,0.15)] text-gray-700 text-sm"
             autoFocus
           />
           <button
             type="submit"
-            className="px-3 py-1.5 bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium rounded-lg transition-colors"
+            style={{
+              transition:
+                'background-color 0.15s ease, transform 0.18s cubic-bezier(0.34,1.56,0.64,1)',
+            }}
+            className="px-3 py-1.5 bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium rounded-lg active:scale-95"
           >
             Save
           </button>
           <button
             type="button"
             onClick={handleEditCancel}
-            className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-600 text-sm font-medium rounded-lg transition-colors"
+            style={{
+              transition:
+                'background-color 0.15s ease, transform 0.18s cubic-bezier(0.34,1.56,0.64,1)',
+            }}
+            className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-600 text-sm font-medium rounded-lg active:scale-95"
           >
             Cancel
           </button>
         </form>
       ) : (
         <span
-          className={`flex-1 text-base transition-all ${
-            todo.completed ? 'line-through text-gray-400' : 'text-gray-700'
-          }`}
+          className="flex-1 text-base"
+          style={{
+            transition: 'color 0.2s ease, opacity 0.2s ease',
+            color: todo.completed ? '#9ca3af' : '#374151',
+            textDecoration: todo.completed ? 'line-through' : 'none',
+            opacity: todo.completed ? 0.7 : 1,
+          }}
         >
           {todo.text}
         </span>
@@ -98,10 +155,19 @@ export default function TodoItem({ todo, onToggle, onDelete, onEdit }: TodoItemP
 
       {/* Action buttons */}
       {!isEditing && (
-        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div
+          className="flex gap-1"
+          style={{
+            transition: 'opacity 0.18s ease, transform 0.18s cubic-bezier(0.34,1.56,0.64,1)',
+          }}
+        >
           <button
             onClick={() => setIsEditing(true)}
-            className="p-1.5 text-gray-400 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-all"
+            style={{
+              transition:
+                'color 0.15s ease, background-color 0.15s ease, transform 0.18s cubic-bezier(0.34,1.56,0.64,1)',
+            }}
+            className="p-1.5 text-gray-400 hover:text-orange-500 hover:bg-orange-50 rounded-lg opacity-0 group-hover:opacity-100 active:scale-90"
             aria-label="Edit task"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -114,8 +180,12 @@ export default function TodoItem({ todo, onToggle, onDelete, onEdit }: TodoItemP
             </svg>
           </button>
           <button
-            onClick={() => onDelete(todo.id)}
-            className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+            onClick={handleDelete}
+            style={{
+              transition:
+                'color 0.15s ease, background-color 0.15s ease, transform 0.18s cubic-bezier(0.34,1.56,0.64,1)',
+            }}
+            className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg opacity-0 group-hover:opacity-100 active:scale-90"
             aria-label="Delete task"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -13,8 +13,15 @@ interface TodoListProps {
 export default function TodoList({ todos, onToggle, onDelete, onEdit }: TodoListProps) {
   if (todos.length === 0) {
     return (
-      <div className="py-16 text-center">
-        <div className="text-6xl mb-4">📋</div>
+      <div
+        className="py-16 text-center animate-fade-in"
+      >
+        <div
+          className="text-6xl mb-4 animate-bounce-in"
+          style={{ display: 'inline-block' }}
+        >
+          📋
+        </div>
         <p className="text-gray-400 text-lg font-medium">No tasks here!</p>
         <p className="text-gray-300 text-sm mt-1">Add a new task above to get started.</p>
       </div>

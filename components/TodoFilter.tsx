@@ -29,17 +29,30 @@ export default function TodoFilter({
         <button
           key={f.value}
           onClick={() => onFilterChange(f.value)}
-          className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all ${
+          style={{
+            transition:
+              'background-color 0.18s cubic-bezier(0.34,1.56,0.64,1), color 0.15s ease, transform 0.18s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.18s ease',
+            transform: currentFilter === f.value ? 'scale(1.04)' : 'scale(1)',
+          }}
+          className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium active:scale-95 ${
             currentFilter === f.value
-              ? 'bg-orange-500 text-white shadow-sm'
+              ? 'bg-orange-500 text-white shadow-sm shadow-orange-200'
               : 'text-gray-500 hover:bg-gray-100'
           }`}
         >
           {f.label}
           {f.count > 0 && (
             <span
-              className={`ml-1.5 inline-flex items-center justify-center w-5 h-5 text-xs rounded-full ${
-                currentFilter === f.value ? 'bg-orange-400 text-white' : 'bg-gray-200 text-gray-600'
+              style={{
+                transition:
+                  'background-color 0.18s ease, color 0.15s ease, transform 0.25s cubic-bezier(0.34,1.56,0.64,1)',
+                display: 'inline-flex',
+                transform: currentFilter === f.value ? 'scale(1.1)' : 'scale(1)',
+              }}
+              className={`ml-1.5 items-center justify-center w-5 h-5 text-xs rounded-full ${
+                currentFilter === f.value
+                  ? 'bg-orange-400 text-white'
+                  : 'bg-gray-200 text-gray-600'
               }`}
             >
               {f.count}
